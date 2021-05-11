@@ -13,7 +13,7 @@ open import Cubical.Algebra
 open import Cubical.Algebra.Properties
 open import Cubical.Algebra.Monoid.Morphism
 
-open import Cubical.Algebra.Semigroup.Properties using (isPropIsSemigroup)
+open import Cubical.Algebra.Semigroup.Properties as Semigroup using (isPropIsSemigroup)
 
 open import Cubical.Relation.Binary
 open import Cubical.Relation.Binary.Reasoning.Equality
@@ -25,9 +25,11 @@ private
   variable
     ℓ : Level
 
+
 isPropIsMonoid : ∀ {M : Type ℓ} {_•_ ε} → isProp (IsMonoid M _•_ ε)
 isPropIsMonoid {_} {_} {_•_} {ε} (ismonoid aSemi aId) (ismonoid bSemi bId) =
   cong₂ ismonoid (isPropIsSemigroup aSemi bSemi) (isPropIdentity (IsSemigroup.is-set aSemi) _•_ ε aId bId)
+
 
 module MonoidLemmas (M : Monoid ℓ) where
   open Monoid M
@@ -64,6 +66,7 @@ module MonoidLemmas (M : Monoid ℓ) where
   ^semi≡^ : ∀ x n → x ^′ n ≡ x ^ (ℕ₊₁→ℕ n)
   ^semi≡^ x one    = sym (identityʳ x)
   ^semi≡^ x (2+ n) = cong (x •_) (^semi≡^ x (1+ n))
+
 
 -- Invertible elements
 module Invertible (M : Monoid ℓ) where
@@ -102,6 +105,11 @@ module Invertible (M : Monoid ℓ) where
 
   εInvertible : Invertible ε
   εInvertible = ε , εInverses
+
+
+module Kernel {ℓ ℓ′} {M : Monoid ℓ} {N : Monoid ℓ′} (hom : MonoidHom M N)
+  = Semigroup.Kernel (MonoidHom→SemigroupHom hom)
+
 
 open MonoidLemmas public
 open Invertible public

@@ -8,6 +8,7 @@ open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Isomorphism
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Function using (flip)
+open import Cubical.Functions.Embedding
 
 open import Cubical.Data.Nat hiding (_+_; _*_)
 open import Cubical.Data.NatPlusOne using (ℕ₊₁→ℕ)
@@ -21,7 +22,8 @@ open import Cubical.Algebra.Group.Morphism
 
 open import Cubical.Algebra.Monoid.Properties using (isPropIsMonoid; module MonoidLemmas)
 
-open import Cubical.Relation.Binary
+open import Cubical.Relation.Unary as Unary hiding (isPropValued)
+open import Cubical.Relation.Binary as Binary hiding (isPropValued)
 open import Cubical.Relation.Binary.Reasoning.Equality
 
 open import Cubical.Algebra.Group.MorphismProperties public
@@ -29,7 +31,7 @@ open import Cubical.Algebra.Group.MorphismProperties public
 
 private
   variable
-    ℓ ℓ′ ℓ′′ : Level
+    ℓ ℓ′ : Level
 
 isPropIsGroup : ∀ {G : Type ℓ} {_•_ ε _⁻¹} → isProp (IsGroup G _•_ ε _⁻¹)
 isPropIsGroup {G = G} {_•_} {ε} {_⁻¹} (isgroup aMon aInv) (isgroup bMon bInv) =
@@ -261,6 +263,57 @@ module Conjugation (G : Group ℓ) where
 
 
 module Normal (G : Group ℓ) where
+
+
+module Kernel {G : Group ℓ} {H : Group ℓ′} (hom : GroupHom G H) where
+  module G = Group G
+  module H = Group H
+  open GroupHom hom renaming (fun to f)
+  open GroupLemmas
+
+
+  Kernel : Pred ⟨ G ⟩ ℓ′
+  Kernel x = f x ≡ H.ε
+
+  isPropKernel : Unary.isPropValued Kernel
+  isPropKernel x = H.is-set (f x) H.ε
+
+  Kernelᵖ : PropPred ⟨ G ⟩ ℓ′
+  Kernelᵖ = Kernel , isPropKernel
+
+
+  ker-preservesId : G.ε ∈ Kernel
+  ker-preservesId = preservesId
+
+  ker-preservesOp : G._•_ Unary.Preserves₂ Kernel
+  ker-preservesOp {x} {y} fx≡ε fy≡ε =
+    f (x G.• y) ≡⟨ preservesOp x y ⟩
+    f x H.• f y ≡⟨ cong₂ H._•_ fx≡ε fy≡ε ⟩
+    H.ε H.• H.ε ≡⟨ H.identityʳ H.ε ⟩
+    H.ε         ∎
+
+  ker-preservesInv : G._⁻¹ Unary.Preserves Kernel
+  ker-preservesInv {x} fx≡ε =
+    f (x G.⁻¹) ≡⟨ preservesInv _ ⟩
+    f x H.⁻¹   ≡⟨ cong H._⁻¹ fx≡ε ⟩
+    H.ε H.⁻¹   ≡⟨ invId H ⟩
+    H.ε        ∎
+
+
+  ker⊆ε→inj : Kernel ⊆ ｛ G.ε ｝ → ∀ {x y} → f x ≡ f y → x ≡ y
+  ker⊆ε→inj sub fx≡fy = inv-≡ʳ G (sub (preservesOp+Inv _ _ ∙ ≡-invʳ H fx≡fy))
+    where
+      preservesOp+Inv : ∀ a b → f (a G.• b G.⁻¹) ≡ f a H.• f b H.⁻¹
+      preservesOp+Inv a b = preservesOp a (b G.⁻¹) ∙ cong (f a H.•_) (preservesInv b)
+
+  ker⊆ε→emb : Kernel ⊆ ｛ G.ε ｝ → isEmbedding f
+  ker⊆ε→emb sub = injEmbedding G.is-set H.is-set (ker⊆ε→inj sub)
+
+  inj→ker⊆ε : (∀ {x y} → f x ≡ f y → x ≡ y) → Kernel ⊆ ｛ G.ε ｝
+  inj→ker⊆ε inj fx≡ε = inj (fx≡ε ∙ sym preservesId)
+
+  emb→ker⊆ε : isEmbedding f → Kernel ⊆ ｛ G.ε ｝
+  emb→ker⊆ε emb = inj→ker⊆ε (invIsEq (emb _ _))
 
 
 open GroupLemmas public

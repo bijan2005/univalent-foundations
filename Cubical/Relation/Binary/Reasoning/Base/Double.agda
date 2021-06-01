@@ -2,10 +2,10 @@
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
 
 open import Cubical.Core.Everything
-open import Cubical.Relation.Binary
+open import Cubical.Relation.Binary.Raw
 
 module Cubical.Relation.Binary.Reasoning.Base.Double {a ℓ₁ ℓ₂} {A : Type a}
-  {_≤_ : Rel A ℓ₁} {_<_ : Rel A ℓ₂}
+  {_≤_ : RawRel A ℓ₁} {_<_ : RawRel A ℓ₂}
   (≤-isPreorder : IsPreorder _≤_)
   (<-transitive : Transitive _<_) (<⇒≤ : _<_ ⇒ _≤_)
   (<-≤-transitive : Trans _<_ _≤_ _<_) (≤-<-transitive : Trans _≤_ _<_ _<_)

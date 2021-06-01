@@ -4,7 +4,7 @@ module Cubical.Data.Unit.Polymorphic where
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
 open import Cubical.Relation.Nullary using (yes)
-open import Cubical.Relation.Binary using (Decidable)
+open import Cubical.Relation.Binary.Raw using (Decidable)
 
 import Cubical.Data.Unit.Base as ⊤
 

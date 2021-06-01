@@ -56,8 +56,9 @@ module SemigroupLemmas (S : Semigroup ℓ) where
 
 
 module Kernel {S : Semigroup ℓ} {T : Semigroup ℓ′} (hom : SemigroupHom S T) where
-  module S = Semigroup S
-  module T = Semigroup T
+  private
+    module S = Semigroup S
+    module T = Semigroup T
   open SemigroupHom hom renaming (fun to f)
 
   Kernel : Rel ⟨ S ⟩ ℓ′

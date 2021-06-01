@@ -21,6 +21,9 @@ open import Cubical.Foundations.Univalence using (ua)
 
 open import Cubical.Relation.Nullary hiding (¬_)
 
+open import Cubical.Structures.Carrier public
+  using (⟨_⟩; ΣCarrier)
+
 infix 10 ¬_
 infixr 8 _⊔_
 infixr 8 _⊔′_
@@ -51,11 +54,8 @@ private
     P Q R : hProp ℓ
     A B C : Type ℓ
 
-[_] : hProp ℓ → Type ℓ
-[_] = fst
-
-isProp[] : (A : hProp ℓ) → isProp [ A ]
-isProp[] = snd
+isPropHProp : (A : hProp ℓ) → isProp ⟨ A ⟩
+isPropHProp = snd
 
 ∥_∥ₚ : Type ℓ → hProp ℓ
 ∥ A ∥ₚ = ∥ A ∥ , propTruncIsProp
@@ -63,36 +63,36 @@ isProp[] = snd
 _≡ₚ_ : (x y : A) → hProp _
 x ≡ₚ y = ∥ x ≡ y ∥ₚ
 
-hProp≡ : [ P ] ≡ [ Q ] → P ≡ Q
+hProp≡ : ⟨ P ⟩ ≡ ⟨ Q ⟩ → P ≡ Q
 hProp≡ p = Σ≡Prop (\ _ → isPropIsProp) p
 
 --------------------------------------------------------------------------------
 -- Logical implication of mere propositions
 
 _⇒_ : (A : hProp ℓ) → (B : hProp ℓ') → hProp _
-A ⇒ B = ([ A ] → [ B ]) , isPropΠ λ _ → isProp[] B
+A ⇒ B = (⟨ A ⟩ → ⟨ B ⟩) , isPropΠ λ _ → isPropHProp B
 
-⇔toPath : [ P ⇒ Q ] → [ Q ⇒ P ] → P ≡ Q
+⇔toPath : ⟨ P ⇒ Q ⟩ → ⟨ Q ⇒ P ⟩ → P ≡ Q
 ⇔toPath {P = P} {Q = Q} P⇒Q Q⇒P = hProp≡ (isoToPath
-  (iso P⇒Q Q⇒P (λ b → isProp[] Q (P⇒Q (Q⇒P b)) b) λ a → isProp[] P (Q⇒P (P⇒Q a)) a))
+  (iso P⇒Q Q⇒P (λ b → isPropHProp Q (P⇒Q (Q⇒P b)) b) λ a → isPropHProp P (Q⇒P (P⇒Q a)) a))
 
-pathTo⇒ : P ≡ Q → [ P ⇒ Q ]
-pathTo⇒ p x = subst fst  p x
+pathTo⇒ : P ≡ Q → ⟨ P ⇒ Q ⟩
+pathTo⇒ p x = subst fst p x
 
-pathTo⇐ : P ≡ Q → [ Q ⇒ P ]
+pathTo⇐ : P ≡ Q → ⟨ Q ⇒ P ⟩
 pathTo⇐ p x = subst fst (sym p) x
 
-substₚ : {x y : A} (B : A → hProp ℓ) → [ x ≡ₚ y ⇒ B x ⇒ B y ]
-substₚ {x = x} {y = y} B = PropTrunc.elim (λ _ → isPropΠ λ _ → isProp[] (B y)) (subst (fst ∘ B))
+substₚ : {x y : A} (B : A → hProp ℓ) → ⟨ x ≡ₚ y ⇒ B x ⇒ B y ⟩
+substₚ {x = x} {y = y} B = PropTrunc.elim (λ _ → isPropΠ λ _ → isPropHProp (B y)) (subst (fst ∘ B))
 
 --------------------------------------------------------------------------------
 -- Mixfix notations for ⇔-toPath
 -- see ⊔-identityˡ and ⊔-identityʳ for the difference
 
-⇒∶_⇐∶_ : [ P ⇒ Q ] → [ Q ⇒ P ] → P ≡ Q
+⇒∶_⇐∶_ : ⟨ P ⇒ Q ⟩ → ⟨ Q ⇒ P ⟩ → P ≡ Q
 ⇒∶_⇐∶_ = ⇔toPath
 
-⇐∶_⇒∶_ : [ Q ⇒ P ] → [ P ⇒ Q ] → P ≡ Q
+⇐∶_⇒∶_ : ⟨ Q ⇒ P ⟩ → ⟨ P ⇒ Q ⟩ → P ≡ Q
 ⇐∶ g ⇒∶ f  = ⇔toPath f g
 --------------------------------------------------------------------------------
 -- False and True
@@ -107,7 +107,7 @@ substₚ {x = x} {y = y} B = PropTrunc.elim (λ _ → isPropΠ λ _ → isProp[]
 -- Pseudo-complement of mere propositions
 
 ¬_ : hProp ℓ → hProp _
-¬ A = ([ A ] → ⊥.⊥) , isPropΠ λ _ → ⊥.isProp⊥
+¬ A = (⟨ A ⟩ → ⊥.⊥) , isPropΠ λ _ → ⊥.isProp⊥
 
 _≢ₚ_ : (x y : A) → hProp _
 x ≢ₚ y = ¬ x ≡ₚ y
@@ -119,7 +119,7 @@ _⊔′_ : Type ℓ → Type ℓ' → Type _
 A ⊔′ B = ∥ A ⊎ B ∥
 
 _⊔_ : hProp ℓ → hProp ℓ' → hProp _
-P ⊔ Q = ∥ [ P ] ⊎ [ Q ] ∥ₚ
+P ⊔ Q = ∥ ⟨ P ⟩ ⊎ ⟨ Q ⟩ ∥ₚ
 
 inl : A → A ⊔′ B
 inl x = ∣ ⊎.inl x ∣
@@ -127,8 +127,8 @@ inl x = ∣ ⊎.inl x ∣
 inr : B → A ⊔′ B
 inr x = ∣ ⊎.inr x ∣
 
-⊔-elim : (P : hProp ℓ) (Q : hProp ℓ') (R : [ P ⊔ Q ] → hProp ℓ'')
-  → (∀ x → [ R (inl x) ]) → (∀ y → [ R (inr y) ]) → (∀ z → [ R z ])
+⊔-elim : (P : hProp ℓ) (Q : hProp ℓ') (R : ⟨ P ⊔ Q ⟩ → hProp ℓ'')
+  → (∀ x → ⟨ R (inl x) ⟩) → (∀ y → ⟨ R (inr y) ⟩) → (∀ z → ⟨ R z ⟩)
 ⊔-elim _ _ R P⇒R Q⇒R = PropTrunc.elim (snd ∘ R) (⊎.elim P⇒R Q⇒R)
 
 --------------------------------------------------------------------------------
@@ -137,11 +137,11 @@ _⊓′_ : Type ℓ → Type ℓ' → Type _
 A ⊓′ B = A × B
 
 _⊓_ : hProp ℓ → hProp ℓ' → hProp _
-A ⊓ B = [ A ] ⊓′ [ B ] , isOfHLevelΣ 1 (isProp[] A) (\ _ → isProp[] B)
+A ⊓ B = ⟨ A ⟩ ⊓′ ⟨ B ⟩ , isOfHLevelΣ 1 (isPropHProp A) (λ _ → isPropHProp B)
 
-⊓-intro : (P : hProp ℓ) (Q : [ P ] → hProp ℓ') (R : [ P ] → hProp ℓ'')
-       → (∀ a → [ Q a ]) → (∀ a → [ R a ]) → (∀ (a : [ P ]) → [ Q a ⊓ R a ] )
-⊓-intro _ _ _ = \ f g a → f a , g a
+⊓-intro : (P : hProp ℓ) (Q : ⟨ P ⟩ → hProp ℓ') (R : ⟨ P ⟩ → hProp ℓ'')
+       → (∀ a → ⟨ Q a ⟩) → (∀ a → ⟨ R a ⟩) → (∀ (a : ⟨ P ⟩) → ⟨ Q a ⊓ R a ⟩ )
+⊓-intro _ _ _ = λ f g a → f a , g a
 
 --------------------------------------------------------------------------------
 -- Logical bi-implication of mere propositions
@@ -154,10 +154,10 @@ A ⇔ B = (A ⇒ B) ⊓ (B ⇒ A)
 
 
 ∀[∶]-syntax : (A → hProp ℓ) → hProp _
-∀[∶]-syntax {A = A} P = (∀ x → [ P x ]) , isPropΠ (isProp[] ∘ P)
+∀[∶]-syntax {A = A} P = (∀ x → ⟨ P x ⟩) , isPropΠ (isPropHProp ∘ P)
 
 ∀[]-syntax : (A → hProp ℓ) → hProp _
-∀[]-syntax {A = A} P = (∀ x → [ P x ]) , isPropΠ (isProp[] ∘ P)
+∀[]-syntax {A = A} P = (∀ x → ⟨ P x ⟩) , isPropΠ (isPropHProp ∘ P)
 
 syntax ∀[∶]-syntax {A = A} (λ a → P) = ∀[ a ∶ A ] P
 syntax ∀[]-syntax (λ a → P)          = ∀[ a ] P
@@ -166,10 +166,10 @@ syntax ∀[]-syntax (λ a → P)          = ∀[ a ] P
 
 
 ∃[]-syntax : (A → hProp ℓ) → hProp _
-∃[]-syntax {A = A} P = ∥ Σ A ([_] ∘ P) ∥ₚ
+∃[]-syntax {A = A} P = ∥ Σ A (⟨_⟩ ∘ P) ∥ₚ
 
 ∃[∶]-syntax : (A → hProp ℓ) → hProp _
-∃[∶]-syntax {A = A} P = ∥ Σ A ([_] ∘ P) ∥ₚ
+∃[∶]-syntax {A = A} P = ∥ Σ A (⟨_⟩ ∘ P) ∥ₚ
 
 syntax ∃[∶]-syntax {A = A} (λ x → P) = ∃[ x ∶ A ] P
 syntax ∃[]-syntax (λ x → P) = ∃[ x ] P
@@ -177,7 +177,7 @@ syntax ∃[]-syntax (λ x → P) = ∃[ x ] P
 -- Decidable mere proposition
 
 Decₚ : (P : hProp ℓ) → hProp ℓ
-Decₚ P = Dec [ P ] , isPropDec (isProp[] P)
+Decₚ P = Dec ⟨ P ⟩ , isPropDec (isPropHProp P)
 
 --------------------------------------------------------------------------------
 -- Negation commutes with truncation
@@ -290,13 +290,13 @@ Decₚ P = Dec [ P ] , isPropDec (isProp[] P)
 
 infix 5 _∈_
 _∈_ : {X : Type ℓ} → X → ℙ X → Type ℓ
-x ∈ A = [ A x ]
+x ∈ A = ⟨ A x ⟩
 
 _⊆_ : {X : Type ℓ} → ℙ X → ℙ X → Type ℓ
 A ⊆ B = ∀ x → x ∈ A → x ∈ B
 
 ∈-isProp : {X : Type ℓ} (A : ℙ X) (x : X) → isProp (x ∈ A)
-∈-isProp A = isProp[] ∘ A
+∈-isProp A = isPropHProp ∘ A
 
 ⊆-isProp : {X : Type ℓ} (A B : ℙ X) → isProp (A ⊆ B)
 ⊆-isProp A B = isPropΠ2 (λ x _ → ∈-isProp B x)

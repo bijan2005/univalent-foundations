@@ -6,22 +6,20 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels using (hProp)
 
 open import Cubical.Relation.Binary
+open import Cubical.Structures.Carrier
 
 ------------------------------------------------------------------------
 -- Definition
 
-Const : ∀ {a b c} {A : Type a} {B : Type b} → Type c → REL A B c
+Const : ∀ {a b ℓ} {A : Type a} {B : Type b} → hProp ℓ → REL A B ℓ
 Const I = λ _ _ → I
-
-ConstProp : ∀ {a b c} {A : Type a} {B : Type b} → hProp c → PropREL A B c
-ConstProp (I , isPropI) = Const I , λ _ _ → isPropI
 
 ------------------------------------------------------------------------
 -- Properties
 
-module _ {a c} {A : Type a} {C : Type c} where
+module _ {a c} {A : Type a} {C : hProp c} where
 
-  reflexive : C → Reflexive {A = A} (Const C)
+  reflexive : ⟨ C ⟩ → Reflexive {A = A} (Const C)
   reflexive c = c
 
   symmetric : Symmetric {A = A} (Const C)
@@ -36,14 +34,14 @@ module _ {a c} {A : Type a} {C : Type c} where
     ; transitive = λ {x} {y} {z} → transitive {x} {y} {z}
     }
 
-  partialEquivalence : PartialEquivalence a c
+  partialEquivalence : PartialEquivalence A c
   partialEquivalence = record { isPartialEquivalence = isPartialEquivalence }
 
-  isEquivalence : C → IsEquivalence {A = A} (Const C)
+  isEquivalence : ⟨ C ⟩ → IsEquivalence {A = A} (Const C)
   isEquivalence c = record
     { isPartialEquivalence = isPartialEquivalence
     ; reflexive            = λ {x} → reflexive c {x}
     }
 
-  equivalence : C → Equivalence a c
+  equivalence : ⟨ C ⟩ → Equivalence A c
   equivalence x = record { isEquivalence = isEquivalence x }

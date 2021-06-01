@@ -1,10 +1,10 @@
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
 
 open import Cubical.Core.Everything
-open import Cubical.Relation.Binary
+open import Cubical.Relation.Binary.Raw
 
 module Cubical.Relation.Binary.Reasoning.Base.Partial
-  {a ℓ} {A : Type a} (_∼_ : Rel A ℓ) (transitive : Transitive _∼_)
+  {a ℓ} {A : Type a} (_∼_ : RawRel A ℓ) (transitive : Transitive _∼_)
   where
 
 open import Cubical.Foundations.Prelude

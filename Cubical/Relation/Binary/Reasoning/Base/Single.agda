@@ -1,10 +1,10 @@
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
 
 open import Cubical.Core.Everything
-open import Cubical.Relation.Binary
+open import Cubical.Relation.Binary.Raw
 
 module Cubical.Relation.Binary.Reasoning.Base.Single {a ℓ} {A : Type a}
-  (_∼_ : Rel A ℓ) (isPreorder : IsPreorder _∼_)
+  (_∼_ : RawRel A ℓ) (isPreorder : IsPreorder _∼_)
   where
 
 open IsPreorder isPreorder

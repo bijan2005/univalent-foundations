@@ -1,12 +1,13 @@
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
 
-open import Cubical.Relation.Binary
+open import Cubical.Core.Everything
+open import Cubical.Relation.Binary.Raw
 
 module Cubical.Relation.Binary.Reasoning.PartialOrder
-  {c ℓ} (P : PartialOrder c ℓ) where
+  {c ℓ} {A : Type c} (P : PartialOrder A ℓ) where
 
 open PartialOrder P
-import Cubical.Relation.Binary.Construct.NonStrictToStrict _≤_ as Strict
+import Cubical.Relation.Binary.Raw.Construct.NonStrictToStrict _≤_ as Strict
 
 ------------------------------------------------------------------------
 -- Re-export contents of base module

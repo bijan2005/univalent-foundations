@@ -1,8 +1,9 @@
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
 
-open import Cubical.Relation.Binary
+open import Cubical.Core.Everything
+open import Cubical.Relation.Binary.Raw
 
-module Cubical.Relation.Binary.Reasoning.Preorder {c ℓ} (P : Preorder c ℓ) where
+module Cubical.Relation.Binary.Reasoning.Preorder {c ℓ} {A : Type c} (P : Preorder A ℓ) where
 
 open Preorder P
 

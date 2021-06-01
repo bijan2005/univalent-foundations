@@ -6,10 +6,11 @@
 
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
 
-open import Cubical.Relation.Binary
+open import Cubical.Core.Everything
+open import Cubical.Relation.Binary.Raw
 
 module Cubical.Relation.Binary.Reasoning.PartialEquivalence
-  {c ℓ} (E : PartialEquivalence c ℓ) where
+  {c ℓ} {A : Type c} (E : PartialEquivalence A ℓ) where
 
 open PartialEquivalence E
 import Cubical.Relation.Binary.Reasoning.Base.Partial _≈_ transitive as Base

@@ -1,8 +1,9 @@
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
 
-open import Cubical.Relation.Binary
+open import Cubical.Core.Everything
+open import Cubical.Relation.Binary.Raw
 
-module Cubical.Relation.Binary.Reasoning.Equivalence {c ℓ} (E : Equivalence c ℓ) where
+module Cubical.Relation.Binary.Reasoning.Equivalence {c ℓ} {A : Type c} (E : Equivalence A ℓ) where
 
 open Equivalence E
 

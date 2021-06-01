@@ -1,5 +1,4 @@
 {-# OPTIONS --cubical --no-import-sorts --safe #-}
-
 module Cubical.Algebra.Group.Properties where
 
 open import Cubical.Core.Everything
@@ -19,6 +18,7 @@ open import Cubical.Data.Prod
 open import Cubical.Algebra
 open import Cubical.Algebra.Properties
 open import Cubical.Algebra.Group.Morphism
+import Cubical.Algebra.Group.Construct.Subgroup as Subgroup
 
 open import Cubical.Algebra.Monoid.Properties using (isPropIsMonoid; module MonoidLemmas)
 
@@ -225,16 +225,18 @@ module GroupLemmas (G : Group ℓ) where
   ^semi≡^ x n = ^semi≡^mon x n ∙ ^mon≡^ x (ℕ₊₁→ℕ n)
 
 
-module Cosets (G : Group ℓ) where
+module Cosets (G : Group ℓ) (H : PropPred ⟨ G ⟩ ℓ′) where
+  open Group G
 
+  open Subgroup
 
 module Conjugation (G : Group ℓ) where
   open Group G
   open GroupLemmas G using (isEquiv-•ˡ; isEquiv-•ʳ)
 
-  module _ (g : Carrier) where
+  module _ (g : ⟨ G ⟩) where
 
-    conjugate : Carrier → Carrier
+    conjugate : ⟨ G ⟩ → ⟨ G ⟩
     conjugate x = g • x • g ⁻¹
 
     conjugate-isEquiv : isEquiv conjugate

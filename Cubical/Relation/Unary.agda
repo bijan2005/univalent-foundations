@@ -3,9 +3,10 @@ module Cubical.Relation.Unary where
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude using (isProp)
+open import Cubical.Foundations.HLevels
+open import Cubical.Structures.Carrier
+import Cubical.Foundations.Logic as L
 
-open import Cubical.Data.Empty hiding (rec)
-open import Cubical.Data.Unit.Base using (⊤)
 open import Cubical.Data.Sigma
 open import Cubical.Data.Sum.Base using (_⊎_; rec)
 open import Cubical.Foundations.Function
@@ -30,17 +31,26 @@ private
 -- containing all the elements of A that satisfy property P. This view
 -- informs much of the notation used below.
 
-Pred : Type a → (ℓ : Level) → Type _
-Pred A ℓ = A → Type ℓ
+RawPred : Type a → (ℓ : Level) → Type _
+RawPred A ℓ = A → Type ℓ
 
-isPropValued : Pred A ℓ → Type _
+Pred : Type a → (ℓ : Level) → Type _
+Pred A ℓ = A → hProp ℓ
+
+
+isPropValued : RawPred A ℓ → Type _
 isPropValued P = ∀ x → isProp (P x)
 
-PropPred : Type a → (ℓ : Level) → Type _
-PropPred A ℓ = Σ (Pred A ℓ) isPropValued
+[_] : Pred A ℓ → RawPred A ℓ
+[ R ] x = R x .fst
 
-⟨_⟩ᴾ : PropPred A ℓ → Pred A ℓ
-⟨_⟩ᴾ = fst
+isProp[] : (P : Pred A ℓ) → isPropValued [ P ]
+isProp[] P x = P x .snd
+
+fromRaw : (P : RawPred A ℓ) → isPropValued P → Pred A ℓ
+fromRaw P isPropP x .fst = P x
+fromRaw P isPropP x .snd = isPropP x
+
 
 ------------------------------------------------------------------------
 -- Special sets
@@ -48,17 +58,17 @@ PropPred A ℓ = Σ (Pred A ℓ) isPropValued
 -- The empty set.
 
 ∅ : Pred A _
-∅ = λ _ → ⊥
+∅ _ = L.⊥
 
 -- The singleton set.
 
 ｛_｝ : A → Pred A _
-｛ x ｝ = _≡ x
+｛ x ｝ = L._≡ₚ x
 
 -- The universal set.
 
 U : Pred A _
-U = λ _ → ⊤
+U _ = L.⊤
 
 ------------------------------------------------------------------------
 -- Membership
@@ -66,7 +76,7 @@ U = λ _ → ⊤
 infix 6 _∈_ _∉_
 
 _∈_ : A → Pred A ℓ → Type _
-x ∈ P = P x
+x ∈ P = ⟨ P x ⟩
 
 _∉_ : A → Pred A ℓ → Type _
 x ∉ P = ¬ x ∈ P
@@ -135,7 +145,7 @@ syntax IUniversal P = ∀[ P ]
 -- satisfies P.
 
 Decidable : Pred A ℓ → Type _
-Decidable P = ∀ x → Dec (P x)
+Decidable P = ∀ x → Dec (x ∈ P)
 
 ------------------------------------------------------------------------
 -- Operations on sets
@@ -150,34 +160,34 @@ infix 5 _≬_
 -- Complement.
 
 ∁ : Pred A ℓ → Pred A ℓ
-∁ P = λ x → x ∉ P
+∁ P = λ x → L.¬ P x
 
 -- Implication.
 
 _⇒_ : Pred A ℓ₁ → Pred A ℓ₂ → Pred A _
-P ⇒ Q = λ x → x ∈ P → x ∈ Q
+P ⇒ Q = λ x → P x L.⇒ Q x
 
 -- Union.
 
 _∪_ : Pred A ℓ₁ → Pred A ℓ₂ → Pred A _
-P ∪ Q = λ x → x ∈ P ⊎ x ∈ Q
+P ∪ Q = λ x → P x L.⊔ Q x
 
 -- Intersection.
 
 _∩_ : Pred A ℓ₁ → Pred A ℓ₂ → Pred A _
-P ∩ Q = λ x → x ∈ P × x ∈ Q
+P ∩ Q = λ x → P x L.⊓ Q x
 
 -- Infinitary union.
 
 ⋃ : ∀ {i} (I : Type i) → (I → Pred A ℓ) → Pred A _
-⋃ I P = λ x → Σ[ i ∈ I ] P i x
+⋃ I P = λ x → L.∃[ i ∶ I ] P i x
 
 syntax ⋃ I (λ i → P) = ⋃[ i ∶ I ] P
 
 -- Infinitary intersection.
 
 ⋂ : ∀ {i} (I : Type i) → (I → Pred A ℓ) → Pred A _
-⋂ I P = λ x → (i : I) → P i x
+⋂ I P = λ x → ((i : I) → x ∈ P i) , isPropΠ λ i → isProp[] (P i) x
 
 syntax ⋂ I (λ i → P) = ⋂[ i ∶ I ] P
 
@@ -190,6 +200,12 @@ _≬_ {A = A} P Q = ∃[ x ∈ A ] x ∈ P × x ∈ Q
 
 _⊢_ : (A → B) → Pred B ℓ → Pred A ℓ
 f ⊢ P = λ x → P (f x)
+
+-- Image.
+
+_⊣_ : (A → B) → Pred A ℓ → Pred B _
+f ⊣ P = λ x → L.∥ Σ[ y ∈ _ ] y ∈ P × (f y ≡ x) ∥ₚ
+
 
 ------------------------------------------------------------------------
 -- Preservation under operations
@@ -233,7 +249,7 @@ infixr  2 _//_ _\\_
 -- Product.
 
 _⟨×⟩_ : Pred A ℓ₁ → Pred B ℓ₂ → Pred (A × B) _
-(P ⟨×⟩ Q) (x , y) = x ∈ P × y ∈ Q
+(P ⟨×⟩ Q) (x , y) = P x L.⊓ Q y
 
 -- Sum over one element.
 
@@ -243,18 +259,18 @@ P ⟨⊎⟩ Q = rec P Q
 -- Sum over two elements.
 
 _⟨⊙⟩_ : Pred A ℓ₁ → Pred B ℓ₂ → Pred (A × B) _
-(P ⟨⊙⟩ Q) (x , y) = x ∈ P ⊎ y ∈ Q
+(P ⟨⊙⟩ Q) (x , y) = P x L.⊔ Q y
 
 -- Implication.
 
 _⟨→⟩_ : Pred A ℓ₁ → Pred B ℓ₂ → Pred (A → B) _
-(P ⟨→⟩ Q) f = f Preserves P ⟶ Q
+(P ⟨→⟩ Q) f = L.∀[ x ∶ _ ] P x L.⇒ Q (f x)
 
 -- Product.
 
 _⟨·⟩_ : (P : Pred A ℓ₁) (Q : Pred B ℓ₂) →
         (P ⟨×⟩ (P ⟨→⟩ Q)) ⊆ Q ∘ uncurry (flip _$_)
-(P ⟨·⟩ Q) (p , f) = f p
+(P ⟨·⟩ Q) (p , f) = f _ p
 
 -- Converse.
 
@@ -264,12 +280,12 @@ P ~ = P ∘ λ { (x , y) → y , x }
 -- Composition.
 
 _⟨∘⟩_ : Pred (A × B) ℓ₁ → Pred (B × C) ℓ₂ → Pred (A × C) _
-_⟨∘⟩_ {B = B} P Q (x , z) = ∃[ y ∈ B ] (x , y) ∈ P × (y , z) ∈ Q
+_⟨∘⟩_ {B = B} P Q (x , z) = L.∃[ y ∶ B ] P (x , y) L.⊓ Q (y , z)
 
 -- Post-division.
 
 _//_ : Pred (A × C) ℓ₁ → Pred (B × C) ℓ₂ → Pred (A × B) _
-(P // Q) (x , y) = Q ∘ (y ,_) ⊆ P ∘ (x ,_)
+(P // Q) (x , y) = L.∀[ z ∶ _ ] Q (y , z) L.⇒ P (x , z)
 
 -- Pre-division.
 

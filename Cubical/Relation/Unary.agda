@@ -2,8 +2,11 @@
 module Cubical.Relation.Unary where
 
 open import Cubical.Core.Everything
-open import Cubical.Foundations.Prelude using (isProp)
+open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
+open import Cubical.Foundations.Equiv
+open import Cubical.Foundations.Isomorphism
+open import Cubical.Foundations.Univalence
 open import Cubical.Structures.Carrier
 import Cubical.Foundations.Logic as L
 
@@ -44,8 +47,8 @@ isPropValued P = ∀ x → isProp (P x)
 [_] : Pred A ℓ → RawPred A ℓ
 [ R ] x = R x .fst
 
-isProp[] : (P : Pred A ℓ) → isPropValued [ P ]
-isProp[] P x = P x .snd
+isProp[_] : (P : Pred A ℓ) → isPropValued [ P ]
+isProp[ P ] x = P x .snd
 
 fromRaw : (P : RawPred A ℓ) → isPropValued P → Pred A ℓ
 fromRaw P isPropP x .fst = P x
@@ -185,9 +188,8 @@ P ∩ Q = λ x → P x L.⊓ Q x
 syntax ⋃ I (λ i → P) = ⋃[ i ∶ I ] P
 
 -- Infinitary intersection.
-
 ⋂ : ∀ {i} (I : Type i) → (I → Pred A ℓ) → Pred A _
-⋂ I P = λ x → ((i : I) → x ∈ P i) , isPropΠ λ i → isProp[] (P i) x
+⋂ I P = λ x → ((i : I) → x ∈ P i) , isPropΠ λ i → isProp[ P i ] x
 
 syntax ⋂ I (λ i → P) = ⋂[ i ∶ I ] P
 
@@ -227,8 +229,31 @@ _∙_ Preserves₂ P = _∙_ Preserves₂ P ⟶ P ⟶ P
 ------------------------------------------------------------------------
 -- Logical equivalence
 
+infix 8 _⇔_ _⇚⇛_
+
 _⇔_ : Pred A ℓ₁ → Pred A ℓ₂ → Type _
-P ⇔ Q = Π[ P ⇒ Q ∩ Q ⇒ P ]
+P ⇔ Q = P ⊆ Q × P ⊇ Q
+
+-- Direct logical equivalence (more useful for proofs)
+
+_⇚⇛_ : Pred A ℓ₁ → Pred A ℓ₂ → Type _
+P ⇚⇛ Q = ∀ x → x ∈ P ≃ x ∈ Q
+
+
+module _ (P : Pred A ℓ₁) (Q : Pred A ℓ₂) where
+
+  ⇔-⇚⇛ : P ⇔ Q → P ⇚⇛ Q
+  ⇔-⇚⇛ (P⊆Q , Q⊆P) x = isPropEquiv→Equiv (P x .snd) (Q x .snd) P⊆Q Q⊆P
+
+  ⇚⇛-⇔ : P ⇚⇛ Q → P ⇔ Q
+  ⇚⇛-⇔ P⇚⇛Q = equivFun (P⇚⇛Q _) , invEq (P⇚⇛Q _)
+
+  equiv≃ : P ⇔ Q ≃ P ⇚⇛ Q
+  equiv≃ = isPropEquiv→Equiv (isProp× (isPropImplicitΠ λ _ → isPropΠ λ _ → (Q _ .snd)) (isPropImplicitΠ λ _ → isPropΠ λ _ → (P _ .snd)))
+                              (isPropΠ λ _ → isPropΣ (isPropΠ λ _ → Q _ .snd) (λ _ → isPropIsEquiv _)) ⇔-⇚⇛ ⇚⇛-⇔
+
+equiv≡ : _⇔_ ≡ _⇚⇛_ {ℓ₁} {A} {ℓ₂} {ℓ}
+equiv≡ = funExt (λ P → funExt (λ Q → ua (equiv≃ P Q)))
 
 ------------------------------------------------------------------------
 -- Predicate combinators

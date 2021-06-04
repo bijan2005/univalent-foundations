@@ -34,8 +34,8 @@ isPropValued R = ∀ a b → isProp (R a b)
 [_] : REL A B ℓ → RawREL A B ℓ
 [ R ] a b = R a b .fst
 
-isProp[] : (R : REL A B ℓ) → isPropValued [ R ]
-isProp[] R a b = R a b .snd
+isProp[_] : (R : REL A B ℓ) → isPropValued [ R ]
+isProp[ R ] a b = R a b .snd
 
 fromRaw : (R : RawREL A B ℓ) → isPropValued R → REL A B ℓ
 fromRaw R isPropR a b .fst = R a b

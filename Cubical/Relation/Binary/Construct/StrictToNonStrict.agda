@@ -56,13 +56,13 @@ x ≤ y = (x < y) ⊔ (x ≡ₚ y)
   }
 
 <-≤-trans : Transitive _<_ → Trans _<_ _≤_ _<_
-<-≤-trans transitive x<y = rec (isProp[] _<_ _ _) λ
+<-≤-trans transitive x<y = rec (isProp[ _<_ ] _ _) λ
   { (inl x) → transitive x<y x
   ; (inr x) → substₚ (λ k → _ < k) x x<y
   }
 
 ≤-<-trans : Transitive _<_ → Trans _≤_ _<_ _<_
-≤-<-trans transitive = rec (isPropΠ λ _ → isProp[] _<_ _ _) λ
+≤-<-trans transitive = rec (isPropΠ λ _ → isProp[ _<_ ] _ _) λ
   { (inl x) y → transitive x y
   ; (inr x) y → substₚ (λ i → i < _) (PT.map sym x) y
   }

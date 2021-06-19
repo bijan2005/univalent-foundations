@@ -15,7 +15,7 @@ open import Cubical.Structures.Carrier
 ------------------------------------------------------------------------
 
 record Magma c : Type (ℓ-suc c) where
-  constructor cmagma
+  constructor mkmagma
   infix 7 _•_ -- No association - forces parentheses
   field
     Carrier : Type c
@@ -30,7 +30,7 @@ instance
 
 
 record Semigroup c : Type (ℓ-suc c) where
-  constructor csemigroup
+  constructor mksemigroup
   infixl 7 _•_
   field
     Carrier     : Type c
@@ -48,7 +48,7 @@ instance
 
 
 record Band c : Type (ℓ-suc c) where
-  constructor cband
+  constructor mkband
   infixl 7 _•_
   field
     Carrier : Type c
@@ -68,7 +68,7 @@ instance
 
 
 record CommutativeSemigroup c : Type (ℓ-suc c) where
-  constructor ccommsemigroup
+  constructor mkcommsemigroup
   infixl 7 _•_
   field
     Carrier                 : Type c
@@ -88,7 +88,7 @@ instance
 
 
 record Semilattice c : Type (ℓ-suc c) where
-  constructor csemilattice
+  constructor mksemilattice
   infixr 7 _•_
   field
     Carrier       : Type c
@@ -108,7 +108,7 @@ instance
 
 
 record SelectiveMagma c : Type (ℓ-suc c) where
-  constructor cselmagma
+  constructor mkselmagma
   infixl 7 _•_
   field
     Carrier          : Type c
@@ -130,7 +130,7 @@ instance
 ------------------------------------------------------------------------
 
 record Monoid c : Type (ℓ-suc c) where
-  constructor cmonoid
+  constructor mkmonoid
   infixl 7 _•_
   field
     Carrier  : Type c
@@ -151,7 +151,7 @@ instance
 
 
 record CommutativeMonoid c : Type (ℓ-suc c) where
-  constructor ccommmonoid
+  constructor mkcommmonoid
   infixl 7 _•_
   field
     Carrier             : Type c
@@ -175,7 +175,7 @@ instance
 
 
 record IdempotentCommutativeMonoid c : Type (ℓ-suc c) where
-  constructor cidemcommmonoid
+  constructor mkidemcommmonoid
   infixl 7 _•_
   field
     Carrier                       : Type c
@@ -201,7 +201,7 @@ instance
 -- from monoids rather than lattices.
 
 BoundedLattice = IdempotentCommutativeMonoid
-pattern cboundedlattice = cidemcommmonoid
+pattern mkboundedlattice = mkidemcommmonoid
 
 module BoundedLattice {c} (idemCommMonoid : IdempotentCommutativeMonoid c) =
        IdempotentCommutativeMonoid idemCommMonoid
@@ -212,7 +212,7 @@ module BoundedLattice {c} (idemCommMonoid : IdempotentCommutativeMonoid c) =
 ------------------------------------------------------------------------
 
 record Group c : Type (ℓ-suc c) where
-  constructor cgroup
+  constructor mkgroup
   infix  8 _⁻¹
   infixl 7 _•_
   field
@@ -235,7 +235,7 @@ instance
 
 
 record AbelianGroup c : Type (ℓ-suc c) where
-  constructor cabgroup
+  constructor mkabgroup
   infix  8 -_
   infixl 7 _+_
   field
@@ -269,7 +269,7 @@ instance
 ------------------------------------------------------------------------
 
 record Lattice c : Type (ℓ-suc c) where
-  constructor clattice
+  constructor mklattice
   infixr 7 _⋀_
   infixr 6 _⋁_
   field
@@ -285,7 +285,7 @@ instance
   LatticeCarrier = record { ⟨_⟩ = Lattice.Carrier }
 
 record DistributiveLattice c : Type (ℓ-suc c) where
-  constructor cdistrlattice
+  constructor mkdistrlattice
   infixr 7 _⋀_
   infixr 6 _⋁_
   field
@@ -309,7 +309,7 @@ instance
 ------------------------------------------------------------------------
 
 record NearSemiring c : Type (ℓ-suc c) where
-  constructor cnearsemiring
+  constructor mknearsemiring
   infixl 7 _*_
   infixl 6 _+_
   field
@@ -343,7 +343,7 @@ instance
 
 
 record SemiringWithoutOne c : Type (ℓ-suc c) where
-  constructor csemiringwo1
+  constructor mksemiringwo1
   infixl 7 _*_
   infixl 6 _+_
   field
@@ -376,7 +376,7 @@ instance
 
 
 record CommutativeSemiringWithoutOne c : Type (ℓ-suc c) where
-  constructor ccommsemiringwo1
+  constructor mkcommsemiringwo1
   infixl 7 _*_
   infixl 6 _+_
   field
@@ -412,7 +412,7 @@ instance
 ------------------------------------------------------------------------
 
 record SemiringWithoutAnnihilatingZero c : Type (ℓ-suc c) where
-  constructor csemiringwoa0
+  constructor mksemiringwoa0
   infixl 7 _*_
   infixl 6 _+_
   field
@@ -455,7 +455,7 @@ instance
 
 
 record Semiring c : Type (ℓ-suc c) where
-  constructor csemiring
+  constructor mksemiring
   infixl 7 _*_
   infixl 6 _+_
   field
@@ -496,7 +496,7 @@ instance
 
 
 record CommutativeSemiring c : Type (ℓ-suc c) where
-  constructor ccommsemiring
+  constructor mkcommsemiring
   infixl 7 _*_
   infixl 6 _+_
   field
@@ -547,7 +547,7 @@ instance
 ------------------------------------------------------------------------
 
 record Ring c : Type (ℓ-suc c) where
-  constructor cring
+  constructor mkring
   infix  8 -_
   infixl 7 _*_
   infixl 6 _+_
@@ -587,7 +587,7 @@ instance
 
 
 record CommutativeRing c : Type (ℓ-suc c) where
-  constructor ccommring
+  constructor mkcommring
   infix  8 -_
   infixl 7 _*_
   infixl 6 _+_
@@ -627,7 +627,7 @@ instance
 
 
 record BooleanAlgebra c : Type (ℓ-suc c) where
-  constructor cbooleanalgebra
+  constructor mkbooleanalgebra
   infix  8 ¬_
   infixr 7 _⋀_
   infixr 6 _⋁_
@@ -658,7 +658,7 @@ instance
 ------------------------------------------------------------------------
 
 record DivisionRing c ℓ : Type (ℓ-suc (ℓ-max c ℓ)) where
-  constructor cdivring
+  constructor mkdivring
   infix  9 _⁻¹
   infix  8 -_
   infixr 7 _*_
@@ -687,7 +687,7 @@ instance
 
 
 record Field c ℓ : Type (ℓ-suc (ℓ-max c ℓ)) where
-  constructor cfield
+  constructor mkfield
   infix  9 _⁻¹
   infix  8 -_
   infixr 7 _*_

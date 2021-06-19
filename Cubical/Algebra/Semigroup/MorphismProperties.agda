@@ -149,12 +149,12 @@ module SemigroupΣTheory {ℓ} where
   SemigroupAxioms≡IsSemigroup = isoToPath SemigroupAxiomsIsoIsSemigroup
 
   Semigroup→SemigroupΣ : Semigroup ℓ → SemigroupΣ
-  Semigroup→SemigroupΣ (csemigroup A _•_ isSemigroupA) =
+  Semigroup→SemigroupΣ (mksemigroup A _•_ isSemigroupA) =
     A , _•_ , SemigroupAxiomsIsoIsSemigroup .inv isSemigroupA
 
   SemigroupΣ→Semigroup : SemigroupΣ → Semigroup ℓ
   SemigroupΣ→Semigroup (A , _•_ , isSemigroupA) =
-    csemigroup A _•_ (SemigroupAxiomsIsoIsSemigroup .fun isSemigroupA)
+    mksemigroup A _•_ (SemigroupAxiomsIsoIsSemigroup .fun isSemigroupA)
 
   SemigroupIsoSemigroupΣ : Iso (Semigroup ℓ) SemigroupΣ
   SemigroupIsoSemigroupΣ =
@@ -228,7 +228,7 @@ Semigroup≡ : (S T : Semigroup ℓ) → (
   PathP (λ i → IsSemigroup (p i) (q i)) (isSemigroup S) (isSemigroup T))
   ≃ (S ≡ T)
 Semigroup≡ S T = isoToEquiv (iso
-  (λ (p , q , r) i → csemigroup (p i) (q i) (r i))
+  (λ (p , q , r) i → mksemigroup (p i) (q i) (r i))
   (λ p → cong Carrier p , cong _•_ p , cong isSemigroup p)
   (λ _ → refl) (λ _ → refl))
 

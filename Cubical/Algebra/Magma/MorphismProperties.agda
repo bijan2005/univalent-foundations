@@ -150,12 +150,12 @@ module MagmaΣTheory {ℓ} where
   MagmaAxioms≡IsMagma s = isoToPath (MagmaAxiomsIsoIsMagma s)
 
   Magma→MagmaΣ : Magma ℓ → MagmaΣ
-  Magma→MagmaΣ (cmagma A _•_ isMagma) =
+  Magma→MagmaΣ (mkmagma A _•_ isMagma) =
     A , _•_ , MagmaAxiomsIsoIsMagma _ .inv isMagma
 
   MagmaΣ→Magma : MagmaΣ → Magma ℓ
   MagmaΣ→Magma (A , _•_ , isMagma•) =
-    cmagma A _•_ (MagmaAxiomsIsoIsMagma _ .fun isMagma•)
+    mkmagma A _•_ (MagmaAxiomsIsoIsMagma _ .fun isMagma•)
 
   MagmaIsoMagmaΣ : Iso (Magma ℓ) MagmaΣ
   MagmaIsoMagmaΣ =
@@ -224,7 +224,7 @@ Magma≡ : (M N : Magma ℓ) → (
   PathP (λ i → IsMagma (p i) (q i)) (isMagma M) (isMagma N))
   ≃ (M ≡ N)
 Magma≡ M N = isoToEquiv (iso
-  (λ (p , q , r) i → cmagma (p i) (q i) (r i))
+  (λ (p , q , r) i → mkmagma (p i) (q i) (r i))
   (λ p → cong Carrier p , cong _•_ p , cong isMagma p)
   (λ _ → refl) (λ _ → refl))
 

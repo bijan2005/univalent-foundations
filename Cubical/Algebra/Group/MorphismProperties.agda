@@ -156,12 +156,12 @@ module GroupΣTheory {ℓ} where
   GroupAxioms≡IsGroup s = isoToPath (GroupAxiomsIsoIsGroup s)
 
   Group→GroupΣ : Group ℓ → GroupΣ
-  Group→GroupΣ (cgroup G _•_ ε _⁻¹ isGroup) =
+  Group→GroupΣ (mkgroup G _•_ ε _⁻¹ isGroup) =
     G , (_•_ , ε , _⁻¹) , GroupAxiomsIsoIsGroup (_•_ , ε , _⁻¹) .inv isGroup
 
   GroupΣ→Group : GroupΣ → Group ℓ
   GroupΣ→Group (G , (_•_ , ε , _⁻¹) , isGroupG) =
-    cgroup G _•_ ε _⁻¹ (GroupAxiomsIsoIsGroup (_•_ , ε , _⁻¹) .fun isGroupG)
+    mkgroup G _•_ ε _⁻¹ (GroupAxiomsIsoIsGroup (_•_ , ε , _⁻¹) .fun isGroupG)
 
   GroupIsoGroupΣ : Iso (Group ℓ) GroupΣ
   GroupIsoGroupΣ =
@@ -198,7 +198,7 @@ module GroupΣTheory {ℓ} where
   RawGroupΣ = TypeWithStr ℓ RawGroupStructure
 
   Group→RawGroupΣ : Group ℓ → RawGroupΣ
-  Group→RawGroupΣ (cgroup A _•_ ε _⁻¹ _) = A , _•_ , ε , _⁻¹
+  Group→RawGroupΣ (mkgroup A _•_ ε _⁻¹ _) = A , _•_ , ε , _⁻¹
 
   InducedGroup : (G : Group ℓ) (H : RawGroupΣ) (e : G .Group.Carrier ≃ H .fst)
                  → RawGroupEquivStr (Group→RawGroupΣ G) H e → Group ℓ
@@ -241,7 +241,7 @@ Group≡ : (G H : Group ℓ) → (
   PathP (λ i → IsGroup (p i) (q i) (r i) (s i)) (isGroup G) (isGroup H))
   ≃ (G ≡ H)
 Group≡ G H = isoToEquiv (iso
-  (λ (p , q , r , s , t) i → cgroup (p i) (q i) (r i) (s i) (t i))
+  (λ (p , q , r , s , t) i → mkgroup (p i) (q i) (r i) (s i) (t i))
   (λ p → cong Carrier p , cong _•_ p , cong ε p , cong _⁻¹ p , cong isGroup p)
   (λ _ → refl) (λ _ → refl))
 

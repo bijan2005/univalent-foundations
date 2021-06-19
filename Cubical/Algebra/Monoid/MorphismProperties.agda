@@ -164,12 +164,12 @@ module MonoidΣTheory {ℓ} where
   MonoidAxioms≡IsMonoid s = isoToPath (MonoidAxiomsIsoIsMonoid s)
 
   Monoid→MonoidΣ : Monoid ℓ → MonoidΣ
-  Monoid→MonoidΣ (cmonoid M _•_ ε isMonoidM) =
+  Monoid→MonoidΣ (mkmonoid M _•_ ε isMonoidM) =
     M , (_•_ , ε) , MonoidAxiomsIsoIsMonoid (_•_ , ε) .inv isMonoidM
 
   MonoidΣ→Monoid : MonoidΣ → Monoid ℓ
   MonoidΣ→Monoid (M , (_•_ , ε) , isMonoidM) =
-    cmonoid M _•_ ε (MonoidAxiomsIsoIsMonoid (_•_ , ε) .fun isMonoidM)
+    mkmonoid M _•_ ε (MonoidAxiomsIsoIsMonoid (_•_ , ε) .fun isMonoidM)
 
   MonoidIsoMonoidΣ : Iso (Monoid ℓ) MonoidΣ
   MonoidIsoMonoidΣ =
@@ -201,7 +201,7 @@ module MonoidΣTheory {ℓ} where
   RawMonoidΣ = TypeWithStr ℓ RawMonoidStructure
 
   Monoid→RawMonoidΣ : Monoid ℓ → RawMonoidΣ
-  Monoid→RawMonoidΣ (cmonoid A _•_ ε _) = A , _•_ , ε
+  Monoid→RawMonoidΣ (mkmonoid A _•_ ε _) = A , _•_ , ε
 
   InducedMonoid : (M : Monoid ℓ) (N : RawMonoidΣ) (e : M .Monoid.Carrier ≃ N .fst) →
                   RawMonoidEquivStr (Monoid→RawMonoidΣ M) N e → Monoid ℓ
@@ -243,7 +243,7 @@ Monoid≡ : (M N : Monoid ℓ) → (
   PathP (λ i → IsMonoid (p i) (q i) (r i)) (isMonoid M) (isMonoid N))
   ≃ (M ≡ N)
 Monoid≡ M N = isoToEquiv (iso
-  (λ (p , q , r , s) i → cmonoid (p i) (q i) (r i) (s i))
+  (λ (p , q , r , s) i → mkmonoid (p i) (q i) (r i) (s i))
   (λ p → cong Carrier p , cong _•_ p , cong ε p , cong isMonoid p)
   (λ _ → refl) (λ _ → refl))
 

@@ -3,7 +3,7 @@ module Cubical.Algebra.Definitions where
 
 open import Cubical.Core.Everything
 open import Cubical.Relation.Binary
-open import Cubical.Data.Prod using (_×_)
+open import Cubical.Data.Sigma using (_×_)
 open import Cubical.Data.Sum using (_⊎_)
 open import Cubical.HITs.PropositionalTruncation using (∥_∥)
 

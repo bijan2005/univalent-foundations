@@ -13,7 +13,7 @@ open import Cubical.Foundations.HLevels using (hSet)
 open import Cubical.Algebra.Base
 open import Cubical.Algebra.Definitions
 open import Cubical.Algebra.Properties
-open import Cubical.Data.Prod.Base using (_,_; proj₁; proj₂)
+open import Cubical.Data.Sigma using (_,_; fst; snd)
 open import Cubical.Data.Nat.Base renaming (zero to ℕ-zero; suc to ℕ-suc)
 open import Cubical.Data.Int.Base
 open import Cubical.Data.NatPlusOne.Base
@@ -100,10 +100,10 @@ record IsMonoid (_•_ : Op₂ A) (ε : A) : Type a where
   open IsSemigroup isSemigroup public hiding (_^_)
 
   identityˡ : LeftIdentity ε _•_
-  identityˡ = proj₁ identity
+  identityˡ = fst identity
 
   identityʳ : RightIdentity ε _•_
-  identityʳ = proj₂ identity
+  identityʳ = snd identity
 
   ε-uniqueʳ : ∀ {e} → RightIdentity e _•_ → ε ≡ e
   ε-uniqueʳ idʳ = id-unique′ identityˡ idʳ
@@ -184,10 +184,10 @@ record IsGroup (_•_ : Op₂ A) (ε : A) (_⁻¹ : Op₁ A) : Type a where
   x /ˡ y = (x ⁻¹) • y
 
   inverseˡ : LeftInverse ε _⁻¹ _•_
-  inverseˡ = proj₁ inverse
+  inverseˡ = fst inverse
 
   inverseʳ : RightInverse ε _⁻¹ _•_
-  inverseʳ = proj₂ inverse
+  inverseʳ = snd inverse
 
   inv-uniqueʳ : ∀ x y → (x • y) ≡ ε → x ≡ (y ⁻¹)
   inv-uniqueʳ = assoc+id+invʳ⇒invʳ-unique assoc identity inverseʳ
@@ -241,10 +241,10 @@ record IsLattice (_⋀_ _⋁_ : Op₂ A) : Type a where
     absorptive    : Absorptive _⋀_ _⋁_
 
   ⋀-absorbs-⋁ : _⋀_ Absorbs _⋁_
-  ⋀-absorbs-⋁  = proj₁ absorptive
+  ⋀-absorbs-⋁ = fst absorptive
 
   ⋁-absorbs-⋀ : _⋁_ Absorbs _⋀_
-  ⋁-absorbs-⋀ = proj₂ absorptive
+  ⋁-absorbs-⋀ = snd absorptive
 
 
 record IsDistributiveLattice (_⋀_ _⋁_ : Op₂ A) : Type a where
@@ -305,16 +305,16 @@ record IsSemiringWithoutOne (_+_ _*_ : Op₂ A) (0# : A) : Type a where
     )
 
   zeroˡ : LeftZero 0# _*_
-  zeroˡ = proj₁ zero
+  zeroˡ = fst zero
 
   zeroʳ : RightZero 0# _*_
-  zeroʳ = proj₂ zero
+  zeroʳ = snd zero
 
   distribˡ : _*_ DistributesOverˡ _+_
-  distribˡ = proj₁ distrib
+  distribˡ = fst distrib
 
   distribʳ : _*_ DistributesOverʳ _+_
-  distribʳ = proj₂ distrib
+  distribʳ = snd distrib
 
   isNearSemiring : IsNearSemiring _+_ _*_ 0#
   isNearSemiring = record
@@ -352,10 +352,10 @@ record IsSemiringWithoutAnnihilatingZero (_+_ _*_ : Op₂ A)
     distrib               : _*_ DistributesOver _+_
 
   distribˡ : _*_ DistributesOverˡ _+_
-  distribˡ = proj₁ distrib
+  distribˡ = fst distrib
 
   distribʳ : _*_ DistributesOverʳ _+_
-  distribʳ = proj₂ distrib
+  distribʳ = snd distrib
 
   open IsCommutativeMonoid +-isCommutativeMonoid public
     renaming
@@ -491,10 +491,10 @@ record IsRing (_+_ _*_ : Op₂ A) (-_ : Op₁ A) (0# 1# : A) : Type a where
     )
 
   distribˡ : _*_ DistributesOverˡ _+_
-  distribˡ = proj₁ distrib
+  distribˡ = fst distrib
 
   distribʳ : _*_ DistributesOverʳ _+_
-  distribʳ = proj₂ distrib
+  distribʳ = snd distrib
 
   zeroˡ : LeftZero 0# _*_
   zeroˡ = assoc+distribʳ+idʳ+invʳ⇒zeˡ {_+_ = _+_} {_*_ = _*_} { -_} +-assoc distribʳ +-identityʳ +-inverseʳ

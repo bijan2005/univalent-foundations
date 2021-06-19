@@ -4,8 +4,8 @@ module Cubical.Algebra.Magma where
 open import Cubical.Algebra.Base public
 open import Cubical.Algebra.Definitions public
 
-open import Cubical.Algebra.Structures public using (IsMagma)
-open import Cubical.Algebra.Bundles public using (Magma; MagmaCarrier)
+open import Cubical.Algebra.Structures public using (IsMagma; ismagma)
+open import Cubical.Algebra.Bundles public using (Magma; mkmagma; MagmaCarrier)
 open import Cubical.Structures.Carrier public
 
 open import Cubical.Algebra.Magma.Properties public

@@ -12,7 +12,7 @@ open import Cubical.Relation.Binary.Definitions
 open import Cubical.Algebra.Base
 open import Cubical.Algebra.Definitions
 open import Cubical.Data.Sum.Base using (inl; inr)
-open import Cubical.Data.Prod using (_,_; isPropProd)
+open import Cubical.Data.Sigma using (_,_)
 open import Cubical.HITs.PropositionalTruncation
 
 open import Cubical.Relation.Binary.Reasoning.Equality
@@ -46,7 +46,7 @@ module _ (isSetA : isSet A) where
   isPropRightIdentity _ _ = isPropΠ λ _ → isSetA _ _
 
   isPropIdentity : (_•_ : Op₂ A) (e : A) → isProp (Identity e _•_)
-  isPropIdentity _•_ e = isPropProd (isPropLeftIdentity _•_ e) (isPropRightIdentity _•_ e)
+  isPropIdentity _•_ e = isProp× (isPropLeftIdentity _•_ e) (isPropRightIdentity _•_ e)
 
   isPropLeftZero : (_•_ : Op₂ A) (z : A) → isProp (LeftZero z _•_)
   isPropLeftZero _ _ = isPropΠ λ _ → isSetA _ _
@@ -55,7 +55,7 @@ module _ (isSetA : isSet A) where
   isPropRightZero _ _ = isPropΠ λ _ → isSetA _ _
 
   isPropZero : (_•_ : Op₂ A) (z : A) → isProp (Zero z _•_)
-  isPropZero _•_ z = isPropProd (isPropLeftZero _•_ z) (isPropRightZero _•_ z)
+  isPropZero _•_ z = isProp× (isPropLeftZero _•_ z) (isPropRightZero _•_ z)
 
   isPropLeftInverse : (_•_ : Op₂ A) (_⁻¹ : Op₁ A) (e : A) → isProp (LeftInverse e _⁻¹ _•_)
   isPropLeftInverse _ _ _ = isPropΠ λ _ → isSetA _ _
@@ -64,7 +64,7 @@ module _ (isSetA : isSet A) where
   isPropRightInverse _ _ _ = isPropΠ λ _ → isSetA _ _
 
   isPropInverse : (_•_ : Op₂ A) (_⁻¹ : Op₁ A) (e : A) → isProp (Inverse e _⁻¹ _•_)
-  isPropInverse _•_ _⁻¹ e = isPropProd (isPropLeftInverse _•_ _⁻¹ e) (isPropRightInverse _•_ _⁻¹ e)
+  isPropInverse _•_ _⁻¹ e = isProp× (isPropLeftInverse _•_ _⁻¹ e) (isPropRightInverse _•_ _⁻¹ e)
 
   isPropLeftConical : (_•_ : Op₂ A) (e : A) → isProp (LeftConical e _•_)
   isPropLeftConical _ _ = isPropΠ3 λ _ _ _ → isSetA _ _
@@ -73,7 +73,7 @@ module _ (isSetA : isSet A) where
   isPropRightConical _ _ = isPropΠ3 λ _ _ _ → isSetA _ _
 
   isPropConical : (_•_ : Op₂ A) (e : A) → isProp (Conical e _•_)
-  isPropConical _•_ e = isPropProd (isPropLeftConical _•_ e) (isPropRightConical _•_ e)
+  isPropConical _•_ e = isProp× (isPropLeftConical _•_ e) (isPropRightConical _•_ e)
 
   isPropDistrˡ : (_*_ _+_ : Op₂ A) → isProp (_*_ DistributesOverˡ _+_)
   isPropDistrˡ _ _ = isPropΠ3 λ _ _ _ → isSetA _ _
@@ -82,7 +82,7 @@ module _ (isSetA : isSet A) where
   isPropDistrʳ _ _ = isPropΠ3 λ _ _ _ → isSetA _ _
 
   isPropDistr : (_*_ _+_ : Op₂ A) → isProp (_*_ DistributesOver _+_)
-  isPropDistr _*_ _+_ = isPropProd (isPropDistrˡ _*_ _+_) (isPropDistrʳ _*_ _+_)
+  isPropDistr _*_ _+_ = isProp× (isPropDistrˡ _*_ _+_) (isPropDistrʳ _*_ _+_)
 
   isPropIdempotentOn : (_•_ : Op₂ A) (x : A) → isProp (_•_ IdempotentOn x)
   isPropIdempotentOn _ _ = isSetA _ _
@@ -100,7 +100,7 @@ module _ (isSetA : isSet A) where
   isPropAbsorbs _ _ = isPropΠ2 λ _ _ → isSetA _ _
 
   isPropAbsorptive : (_⋀_ _⋁_ : Op₂ A) → isProp (Absorptive _⋀_ _⋁_)
-  isPropAbsorptive _⋀_ _⋁_ = isPropProd (isPropAbsorbs _⋀_ _⋁_) (isPropAbsorbs _⋁_ _⋀_)
+  isPropAbsorptive _⋀_ _⋁_ = isProp× (isPropAbsorbs _⋀_ _⋁_) (isPropAbsorbs _⋁_ _⋀_)
 
   isPropInvolutive : (f : Op₁ A) → isProp (Involutive f)
   isPropInvolutive _ = isPropΠ λ _ → isSetA _ _
@@ -112,7 +112,7 @@ module _ (isSetA : isSet A) where
   isPropRightCancel _ = isPropImpΠ2 λ _ _ → isPropΠ2 λ _ _ → isSetA _ _
 
   isPropCancellative : (_•_ : Op₂ A) → isProp (Cancellative _•_)
-  isPropCancellative _•_ = isPropProd (isPropLeftCancel _•_) (isPropRightCancel _•_)
+  isPropCancellative _•_ = isProp× (isPropLeftCancel _•_) (isPropRightCancel _•_)
 
   isPropInterchangeable : (_•_ _◦_ : Op₂ A) → isProp (Interchangeable _•_ _◦_)
   isPropInterchangeable _ _ = isPropΠ2 λ _ _ → isPropΠ2 λ _ _ → isSetA _ _

@@ -173,6 +173,9 @@ compPathP-filler {A = A} {x = x} {B = B} p q j i =
 transport : {A B : Type ℓ} → A ≡ B → A → B
 transport p a = transp (λ i → p i) i0 a
 
+transport⁻ : ∀ {ℓ} {A B : Type ℓ} → A ≡ B → B → A
+transport⁻ p = transport (λ i → p (~ i))
+
 -- Transporting in a constant family is the identity function (up to a
 -- path). If we would have regularity this would be definitional.
 transportRefl : (x : A) → transport refl x ≡ x
@@ -185,6 +188,9 @@ transport-filler p x i = transp (λ j → p (i ∧ j)) (~ i) x
 -- We want B to be explicit in subst
 subst : (B : A → Type ℓ') (p : x ≡ y) → B x → B y
 subst B p pa = transport (λ i → B (p i)) pa
+
+subst⁻ : ∀ {ℓ ℓ'} {A : Type ℓ} {x y : A} (B : A → Type ℓ') (p : x ≡ y) → B y → B x
+subst⁻ B p pa = transport⁻ (λ i → B (p i)) pa
 
 substRefl : (px : B x) → subst B refl px ≡ px
 substRefl px = transportRefl px

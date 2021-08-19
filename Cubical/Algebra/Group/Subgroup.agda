@@ -13,27 +13,27 @@ open import Cubical.Algebra.Monoid.Submonoid
 open import Cubical.Relation.Unary
 open import Cubical.Relation.Unary.Subtype
 
+open import Cubical.HITs.PropositionalTruncation
 
-record Subgroup {c} (G : Group c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
-  constructor mksubgroup
+
+record IsSubgroup {c ℓ} (G : Group c) (Member : Pred ⟨ G ⟩ ℓ) : Type (ℓ-max c ℓ) where
+  constructor issubgroup
 
   private module G = Group G
 
   field
-    Member : Pred ⟨ G ⟩ ℓ
     preservesOp : G._•_ Preserves₂ Member
     preservesInv : G._⁻¹ Preserves Member
     preservesId : G.ε ∈ Member
 
-  submonoid : Submonoid G.monoid ℓ
-  submonoid = record
-    { Member = Member
-    ; preservesOp = preservesOp
+
+  isSubmonoid : IsSubmonoid G.monoid Member
+  isSubmonoid = record
+    { preservesOp = preservesOp
     ; preservesId = preservesId
     }
 
-  open Submonoid submonoid hiding (Member; preservesOp; preservesId; _^_) public
-
+  open IsSubmonoid isSubmonoid hiding (preservesOp; preservesId; _^_) public
 
   _⁻¹ : Op₁ Carrier
   (x , subx) ⁻¹ = x G.⁻¹ , preservesInv subx
@@ -68,6 +68,43 @@ record Subgroup {c} (G : Group c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
     ) public
 
 
+record Subgroup {c} (G : Group c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
+  constructor mksubgroup
+
+  private module G = Group G
+
+  field
+    Member : Pred ⟨ G ⟩ ℓ
+    isSubgroup : IsSubgroup G Member
+
+  open IsSubgroup isSubgroup public
+
+  submonoid : Submonoid G.monoid ℓ
+  submonoid = record { isSubmonoid = isSubmonoid }
+
+  open Submonoid submonoid using (submagma; subsemigroup)
+
+
 instance
   SubgroupCarrier : ∀ {c ℓ} {G : Group c} → HasCarrier (Subgroup G ℓ) _
   SubgroupCarrier = record { ⟨_⟩ = Subgroup.Carrier }
+
+
+module _ {ℓ} (G : Group ℓ) where
+  open Group G
+
+  ε-isSubgroup : IsSubgroup G ｛ ε ｝
+  ε-isSubgroup = record
+    { preservesOp = map2 λ p q → cong₂ _•_ p q ∙ identityʳ ε
+    ; preservesInv = map λ p → cong _⁻¹ p ∙ cancelʳ ε (inverseˡ ε ∙ sym (identityʳ ε))
+    ; preservesId = ∣ refl ∣
+    }
+
+  ε-subgroup : Subgroup G _
+  ε-subgroup = record { isSubgroup = ε-isSubgroup }
+
+  U-isSubgroup : IsSubgroup G U
+  U-isSubgroup = record {} -- trivial
+
+  U-subgroup : Subgroup G _
+  U-subgroup = record { isSubgroup = U-isSubgroup }

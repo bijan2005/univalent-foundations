@@ -13,22 +13,22 @@ open import Cubical.Algebra.Semigroup.Subsemigroup
 open import Cubical.Relation.Unary
 open import Cubical.Relation.Unary.Subtype
 
+open import Cubical.HITs.PropositionalTruncation
 
-record Submonoid {c} (M : Monoid c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
-  constructor mksubmonoid
 
-  private
-    module M = Monoid M
+record IsSubmonoid {c ℓ} (M : Monoid c) (Member : Pred ⟨ M ⟩ ℓ) : Type (ℓ-max c ℓ) where
+  constructor issubmonoid
+
+  private module M = Monoid M
 
   field
-    Member : Pred ⟨ M ⟩ ℓ
     preservesOp : M._•_ Preserves₂ Member
     preservesId : M.ε ∈ Member
 
-  subsemigroup : Subsemigroup M.semigroup ℓ
-  subsemigroup = record { Member = Member; closed = preservesOp }
+  isSubsemigroup : IsSubsemigroup M.semigroup Member
+  isSubsemigroup = record { closed = preservesOp }
 
-  open Subsemigroup subsemigroup hiding (Member; closed; _^_) public
+  open IsSubsemigroup isSubsemigroup hiding (closed; _^_) public
 
 
   ε : Carrier
@@ -56,6 +56,44 @@ record Submonoid {c} (M : Monoid c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
   open Monoid monoid using (ε-uniqueˡ; ε-uniqueʳ; _^_) public
 
 
+
+
+record Submonoid {c} (M : Monoid c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
+  constructor mksubmonoid
+
+  private module M = Monoid M
+
+  field
+    Member : Pred ⟨ M ⟩ ℓ
+    isSubmonoid : IsSubmonoid M Member
+
+  open IsSubmonoid isSubmonoid public
+
+  subsemigroup : Subsemigroup M.semigroup ℓ
+  subsemigroup = record { isSubsemigroup = isSubsemigroup }
+
+  open Subsemigroup subsemigroup public using (submagma)
+
+
 instance
   SubmonoidCarrier : ∀ {c ℓ} {M : Monoid c} → HasCarrier (Submonoid M ℓ) _
   SubmonoidCarrier = record { ⟨_⟩ = Submonoid.Carrier }
+
+
+module _ {ℓ} (M : Monoid ℓ) where
+  open Monoid M
+
+  ε-isSubmonoid : IsSubmonoid M ｛ ε ｝
+  ε-isSubmonoid = record
+    { preservesOp = map2 λ p q → cong₂ _•_ p q ∙ identityʳ ε
+    ; preservesId = ∣ refl ∣
+    }
+
+  ε-submonoid : Submonoid M _
+  ε-submonoid = record { isSubmonoid = ε-isSubmonoid }
+
+  U-isSubmonoid : IsSubmonoid M U
+  U-isSubmonoid = record {} -- trivial
+
+  U-submonoid : Submonoid M _
+  U-submonoid = record { isSubmonoid = U-isSubmonoid }

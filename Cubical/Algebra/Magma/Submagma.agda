@@ -12,14 +12,14 @@ open import Cubical.Relation.Unary
 open import Cubical.Relation.Unary.Subtype
 
 
-record Submagma {c} (M : Magma c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
-  constructor mksubmagma
+record IsSubmagma {c ℓ} (M : Magma c) (Member : Pred ⟨ M ⟩ ℓ) : Type (ℓ-max c ℓ) where
+  constructor issubmagma
 
   private module M = Magma M
 
   field
-    Member : Pred ⟨ M ⟩ ℓ
     closed : M._•_ Preserves₂ Member
+
 
   Carrier : Type _
   Carrier = Subtype Member
@@ -40,6 +40,37 @@ record Submagma {c} (M : Magma c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
   open Magma magma using (set) public
 
 
+record Submagma {c} (M : Magma c) ℓ : Type (ℓ-max c (ℓ-suc ℓ)) where
+  constructor mksubmagma
+
+  field
+    Member : Pred ⟨ M ⟩ ℓ
+    isSubmagma : IsSubmagma M Member
+
+  open IsSubmagma isSubmagma public
+
+
 instance
   SubmagmaCarrier : ∀ {c ℓ} {M : Magma c} → HasCarrier (Submagma M ℓ) _
   SubmagmaCarrier = record { ⟨_⟩ = Submagma.Carrier }
+
+
+module _ {ℓ} (M : Magma ℓ) where
+  open Magma M
+
+  ∅-isSubmagma : IsSubmagma M ∅
+  ∅-isSubmagma = record { closed = λ () }
+
+  ∅-submagma : Submagma M _
+  ∅-submagma = record { isSubmagma = ∅-isSubmagma }
+
+  U-isSubmagma : IsSubmagma M U
+  U-isSubmagma = record {} -- trivial
+
+  U-submagma : Submagma M _
+  U-submagma = record { isSubmagma = U-isSubmagma }
+
+
+isPropIsSubmagma : ∀ {c ℓ} {M : Magma c} {Member : Pred ⟨ M ⟩ ℓ} → isProp (IsSubmagma M Member)
+isPropIsSubmagma {Member = Member} (issubmagma a) (issubmagma b) =
+  cong issubmagma ((isPropImplicitΠ λ _ → isPropImplicitΠ λ _ → isPropΠ2 λ _ _ → isProp[ Member ] _) a b)

@@ -74,6 +74,8 @@ fromRaw P isPropP x .snd = isPropP x
 U : Pred A _
 U _ = L.⊤
 
+open import Cubical.Data.Unit public using (tt)
+
 ------------------------------------------------------------------------
 -- Membership
 
